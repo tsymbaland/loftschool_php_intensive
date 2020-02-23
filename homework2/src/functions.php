@@ -6,7 +6,7 @@ function task1(array $strings, bool $return = false): ?string
         return "<p>$str</p>";
     }, $strings);
     $result = implode('', $strings);
-    echo $result . PHP_EOL;
+    echo $result . '<br>';
     if ($return) {
         return $result;
     }
@@ -23,37 +23,52 @@ function validateNumericArgs($numericArgs)
     }
 }
 
-function task2(string $operator)
+function getOperation(string $operator)
 {
-    $numericArgs = func_get_args();
-    array_shift($numericArgs);
-    validateNumericArgs($numericArgs);
-
     if ('+' === $operator) {
-        $initialValue = 0;
-        $operation = function ($operand1, $operand2) {
+        return function ($operand1, $operand2) {
             return $operand1 + $operand2;
         };
     } elseif ('-' === $operator) {
-        $initialValue = count($numericArgs) ? $numericArgs[0] : 0;
-        $operation = function ($operand1, $operand2) {
+        return function ($operand1, $operand2) {
             return $operand1 - $operand2;
         };
     } elseif ('*' === $operator) {
-        $initialValue = 1;
-        $operation = function ($operand1, $operand2) {
+        return function ($operand1, $operand2) {
             return $operand1 * $operand2;
+        };
+    } elseif ('/' === $operator) {
+        return function ($operand1, $operand2) {
+            return $operand1 / $operand2;
         };
     } else {
         throw new InvalidArgumentException(
-            'Supported operators: + - *'
+            'Supported operators: + - * /'
         );
     }
+}
 
-    $result = array_reduce($numericArgs, function ($acc, $arg) use ($operation) {
-        return $operation($acc, $arg);
-    }, $initialValue);
-    echo $result . PHP_EOL;
+function task2(string $operator, ...$numericArgs)
+{
+    $operation = getOperation($operator);
+    $numOfArgs = count($numericArgs);
+    if (!$numOfArgs) {
+        throw new InvalidArgumentException(
+            'You should pass at least 1 numeric argument after the operator sign<br>'
+        );
+    }
+    validateNumericArgs($numericArgs);
+
+    $accumulator = $numericArgs[0];
+    $display = [$accumulator];
+    for ($index = 1; $index < $numOfArgs; $index++) {
+        $newNumber = $numericArgs[$index];
+        $accumulator = $operation($accumulator, $newNumber);
+        $display = array_merge($display, [$operator, $newNumber]);
+    }
+    $display = array_merge($display, ['=', $accumulator]);
+
+    echo implode(' ', $display) . '<br>';
 }
 
 function task3(int $cols, int $rows)
@@ -76,22 +91,21 @@ function task3(int $cols, int $rows)
         }
         $html[] = '</tr>';
         if ($row === $rows) {
-            $html[] = '</table>';
+            $html[] = '</table><br>';
         }
     }
-    $html = implode('', $html);
-    echo $html . PHP_EOL;
+    echo implode('', $html);
 }
 
 function task4()
 {
-    echo date('d.m.Y H:i') . PHP_EOL;
-    echo strtotime('24.02.2016 00:00:00') . PHP_EOL;
+    echo date('d.m.Y H:i') . '<br>';
+    echo strtotime('24.02.2016 00:00:00') . '<br>';
 }
 
 function task5(string $source, string $toReplace, string $replacement)
 {
-    echo str_replace($toReplace, $replacement, $source) . PHP_EOL;
+    echo str_replace($toReplace, $replacement, $source) . '<br>';
 }
 
 function task6(string $filePath)
