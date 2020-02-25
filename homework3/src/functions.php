@@ -10,6 +10,7 @@ function makeHeader(string $text, ?int $level = 1): string
 
     return "<h$level>$text</h$level>";
 }
+
 function camelize(string $text, ?string $delimeter = ' '): string
 {
     $words = array_map(
@@ -19,7 +20,8 @@ function camelize(string $text, ?string $delimeter = ' '): string
 
     return implode('', $words);
 }
-function makeHtmlTable(SimpleXMLElement $cfg) :string
+
+function makeHtmlTable(SimpleXMLElement $cfg): string
 {
     $table = ['<table border="2">'];
     $header = ['<thead>'];
@@ -85,7 +87,22 @@ function saveIntoJsonFile(array $arr, string $filePath)
 {
     file_put_contents($filePath, json_encode($arr));
 }
+
 function readFromJsonFile(string $filePath): array
 {
     return json_decode(file_get_contents($filePath), true);
+}
+
+
+function getArrayOfRandomInts(int $size): array
+{
+    $result = [];
+    if ($size < 0) {
+        $size = 0;
+    }
+    for ($i = 1; $i <= $size; $i++) {
+        $result[] = round(rand(1, 100));
+    }
+
+    return $result;
 }

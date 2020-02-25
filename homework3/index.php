@@ -71,3 +71,31 @@ echo ' >>>>>>>>>>>>>>> Modified:<br>';
 var_dump($contents2);
 echo ' >>>>>>>>>>>>>>> Diff:<br>';
 var_dump($diff);
+
+
+echo '-------------------------------------- <br>';
+echo ' # 3<br>';
+echo '-------------------------------------- <br>';
+$randoms = getArrayOfRandomInts(round(rand(50, 100)));
+$delimeter = ';';
+$handle = fopen('randoms.csv', 'w');
+fputcsv($handle, $randoms, $delimeter);
+fclose($handle);
+$handle = fopen('randoms.csv', 'r');
+$csvRows = [];
+while ($row = fgetcsv($handle, 1024 * 100, $delimeter)) {
+    $csvRows[] = $row;
+}
+fclose($handle);
+$sumOfEvens = array_reduce($csvRows, function ($sum, $row) {
+    $rowSum = array_reduce($row, function ($subSum, $number) {
+        if (!($number % 2)) {
+            $subSum += $number;
+        }
+
+        return $subSum;
+    }, 0);
+
+    return $sum + $rowSum;
+}, 0);
+echo "Sum of evens from .csv-file = $sumOfEvens<br>";
