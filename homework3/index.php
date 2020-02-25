@@ -99,3 +99,12 @@ $sumOfEvens = array_reduce($csvRows, function ($sum, $row) {
     return $sum + $rowSum;
 }, 0);
 echo "Sum of evens from .csv-file = $sumOfEvens<br>";
+
+echo '-------------------------------------- <br>';
+echo ' # 4<br>';
+echo '-------------------------------------- <br>';
+$url = 'https://en.wikipedia.org/w/api.php?action=query&titles=Main%20Page&prop=revisions&rvprop=content&format=json';
+$data = readFromJsonFile($url);
+$targetPageData = $data['query']['pages']['15580374'];
+echo "Title: {$targetPageData['title']}<br>";
+echo "PageID: {$targetPageData['pageid']}<br>";
