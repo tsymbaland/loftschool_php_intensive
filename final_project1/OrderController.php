@@ -8,37 +8,45 @@ require_once('Order.php');
 	'email' => $email,
 	'name' => $name,
 	'phone' => $phone,
+
 	'street' => $street,
 	'home' => $house,
 	'part' => $block,
 	'appt' => $apartment,
 	'floor' => $floor,
 	'comment' => $comment,
+
+	'card_payment' => $cardPayment,
 ] = $_REQUEST;
+$cardPayment = filter_var($cardPayment, FILTER_VALIDATE_BOOLEAN);
+// Вынужден обработать отдельно, тк если галка снята, этого ключа не будет.
+$dontCallBack = filter_var(
+	$_REQUEST['dont_call_back'] ?? false,
+	FILTER_VALIDATE_BOOLEAN
+);
 
 $conn = PdoConnection::getConnection();
 $user = new User($conn);
 
 $userId = $user->authByEmail($email);
 if (!is_numeric($userId)) {
-	echo "MAKING NEW USER<br>";
 	$userId = $user->create($email, $name, $phone);
-} else {
-	echo "YEAH I KNOW U<br>";
 }
-echo "userId $userId<br>";
 
 $order = new Order($conn);
 $orderId = $order->create(
 	$userId,
+
+	$cardPayment,
+	$dontCallBack,
 	$comment,
+
 	$street,
 	$house,
-	$block,
+	(string)$block,
 	$apartment,
 	$floor
 );
-echo "orderId $orderId<br>";
 $msg = $order->makeResponseForLastOrder($userId);
 $msg .= '<a href="index.html#order-form">Вернуться к форме заказа</a>';
 echo $msg;

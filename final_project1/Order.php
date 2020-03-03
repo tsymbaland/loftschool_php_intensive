@@ -12,6 +12,8 @@ class Order
 		'user_id' => 'User ID',
 		'address' => 'Address',
 		'comment' => 'Comment',
+		'card_payment' => 'Card payment?',
+		'dont_call_back' => 'Do not call back?',
 	];
 
 	public function __construct(PDO $conn)
@@ -36,16 +38,18 @@ class Order
 
 	public function create(
 		int $userId,
+		bool $cardPayment = false,
+		bool $dontCallBack = false,
 		string $comment = '',
 		string $street = '',
 		int $house = null,
-		int $block = null,
+		string $block = null,
 		int $apartment = null,
 		int $floor = null
 	): int {
 		$query = $this->conn->prepare(
-			'INSERT INTO orders (user_id, address, comment)
-			VALUES (:user_id, :address, :comment);'
+			'INSERT INTO orders (user_id, address, comment, card_payment, dont_call_back)
+			VALUES (:user_id, :address, :comment, :cardPayment, :dontCallBack);'
 		);
 		$query->execute([
 			'user_id' => $userId,
@@ -57,6 +61,8 @@ class Order
 				$floor
 			),
 			'comment' => $comment,
+			'cardPayment' => $cardPayment,
+			'dontCallBack' => $dontCallBack,
 		]);
 
 		return $this->conn->lastInsertId();
@@ -65,7 +71,6 @@ class Order
 	public function makeResponseForLastOrder(int $userId): string
 	{
 		$numOfOrders = $this->getCountForUser($userId);
-		echo "numOfOrders $numOfOrders<br>";
 		$msg = $this->composeResponseMsg($numOfOrders);
 		$this->logResponse($userId, $numOfOrders, $msg);
 
@@ -75,7 +80,7 @@ class Order
 	private function composeAddress(
 		string $street = '',
 		int $house = null,
-		int $block = null,
+		string $block = null,
 		int $apartment = null,
 		int $floor = null
 	): string {
