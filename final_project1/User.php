@@ -1,20 +1,44 @@
 <?php
+require_once('AdminViewTrait.php');
 
 class User
 {
+	use AdminViewTrait;
+
 	/**  @var PDO */
 	private $conn;
+	private $fields = [
+		'id' => 'ID',
+		'email' => 'E-Mail',
+		'name' => 'User Name',
+		'phone_number' => 'Phone #',
+	];
 
 	public function __construct(PDO $conn)
 	{
 		$this->conn = $conn;
 	}
 
+	public function getAdminView(): string
+	{
+		return $this->makeAdminViewHtml(
+			$this->fields,
+			$this->fetchAll()
+		);
+	}
+
+	public function fetchAll(): array
+	{
+		return $this->conn
+			->query('SELECT * FROM users;')
+			->fetchAll(PDO::FETCH_ASSOC);
+	}
+
 	public function authByEmail(string $email): ?int
 	{
 		$this->validateEmail($email);
 		$query = $this->conn->prepare(
-			'SELECT id FROM USERS WHERE email = :email;'
+			'SELECT id FROM users WHERE email = :email;'
 		);
 		$query->execute(['email' => $email]);
 		$result = $query->fetchColumn();

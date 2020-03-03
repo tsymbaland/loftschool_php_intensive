@@ -1,13 +1,37 @@
 <?php
+require_once('AdminViewTrait.php');
 
 class Order
 {
+	use AdminViewTrait;
+
 	/**  @var PDO */
 	private $conn;
+	private $fields = [
+		'id' => 'ID',
+		'user_id' => 'User ID',
+		'address' => 'Address',
+		'comment' => 'Comment',
+	];
 
 	public function __construct(PDO $conn)
 	{
 		$this->conn = $conn;
+	}
+
+	public function getAdminView(): string
+	{
+		return $this->makeAdminViewHtml(
+			$this->fields,
+			$this->fetchAll()
+		);
+	}
+
+	public function fetchAll(): array
+	{
+		return $this->conn
+			->query('SELECT * FROM orders;')
+			->fetchAll(PDO::FETCH_ASSOC);
 	}
 
 	public function create(
