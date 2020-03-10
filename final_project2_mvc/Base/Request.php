@@ -6,17 +6,12 @@ use Exception;
 
 class Request
 {
-
-	// private $requestedModule;
-	// private $requestedController;
-	// private $requestedAction;
 	/** @var string|null */
 	private $requestUri;
 	/** @var array */
 	private $requestUriParts;
 	/** @var array */
 	private $userData;
-
 
 	/** @throws Exception */
 	public function __construct()
@@ -48,12 +43,6 @@ class Request
 	{
 		if ($isAuth) {
 			$parts = explode('/', $this->requestUri);
-
-			// if (!$parts || sizeof($parts) < 2) {
-			//     $this->requestedModule = self::DEFAULT_MODULE;
-			//     $this->requestedController = self::DEFAULT_CONTROLLER;
-			//     $this->requestedAction = self::DEFAULT_ACTION;
-			// } else {
 			foreach ($parts as $i => $part) {
 				if (!$this->validate($part)) {
 					throw new Exception("Url part #$i is not valid: $part");
@@ -65,21 +54,6 @@ class Request
 		}
 	}
 
-	// public function getRequestedModule(): ?string
-	// {
-	// 	return $this->requestedModule;
-	// }
-	//
-	// public function getRequestedController(): ?string
-	// {
-	// 	return $this->requestedController;
-	// }
-	//
-	// public function getRequestedAction(): ?string
-	// {
-	// 	return $this->requestedAction;
-	// }
-
 	public function getUserData(): array
 	{
 		return $this->userData;
@@ -87,7 +61,7 @@ class Request
 
 	public function getRequestUri(): ?string
 	{
-		return $this-> requestUri;
+		return $this->requestUri;
 	}
 
 	public function getRequestUriParts(): array

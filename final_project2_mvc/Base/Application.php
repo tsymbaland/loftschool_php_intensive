@@ -2,6 +2,7 @@
 
 namespace Base;
 
+use Base\Exception\AuthorizationException;
 use Base\PdoConnection;
 use Base\View;
 use Exception;
@@ -24,8 +25,6 @@ class Application
 	public function run()
 	{
 		try {
-			$conn = PdoConnection::getConnection();
-
 			$this->context->initSession();
 			// $this->context->setConn(PdoConnection::getConnection());
 			$this->context->setRequest(new Request());
@@ -44,13 +43,18 @@ class Application
 				);
 			}
 
-			$view = new View($dispatcher->getDefaultTemplateDir());
+			$view = new View($dispatcher->getTemplateDir());
 			// echo"<pre>";var_dump($view, $controller);die;
 
 			$controller->view = $view;
 			$controller->$fullActionName($this->request->getUserData());
 
 			echo $view->render($controller->tplFileName);
+
+		} catch (AuthorizationException $e) {
+			$view = new View($dispatcher->getTemplateDir(true));
+			$view->messages = [$e->getMessage()];
+			echo $view->render($dispatcher::DEFAULT_ACTION . '.phtml');
 		} catch (Exception $e) {
 			echo 'Произошло исключение: ' . $e->getMessage();
 			// обработка исключений самого базового уровня - редирект на 404.html

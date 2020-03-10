@@ -46,6 +46,13 @@ class Dispatcher
 				'signup'
 			]
 		],
+		'main' => [
+			'parts' => [
+				self::DEFAULT_MODULE,
+				self::DEFAULT_CONTROLLER,
+				'mainpage'
+			]
+		],
 	];
 
 	public function __construct()
@@ -59,7 +66,7 @@ class Dispatcher
 
 	public function dispatch(): self
 	{
-		$uri = $this->request->getRequestUri();
+		$uri = $this->request->getRequestUri() ?? 'main';
 		$predefinedRoute = $this->predefinedRoutes[$uri] ?? [];
 		if (
 			$this->isAuth ||
@@ -116,11 +123,18 @@ class Dispatcher
 		return $controller;
 	}
 
-	public function getDefaultTemplateDir()
+	public function getTemplateDir(bool $onAuthError = false)
 	{
+		if ($onAuthError) {
+			$moduleName = $this::DEFAULT_MODULE;
+			$controllerName = $this::DEFAULT_CONTROLLER;
+		} else {
+			$moduleName = $this->moduleName;
+			$controllerName = $this->controllerName;
+		}
 		$rt = ROOT_DIR;
 		$ds = DIRECTORY_SEPARATOR;
-		return "{$rt}App{$ds}{$this->moduleName}{$ds}Templates{$ds}{$this->controllerName}";
+		return "{$rt}App{$ds}{$moduleName}{$ds}Templates{$ds}{$controllerName}";
 	}
 
 	public function getControllerName(): ?string

@@ -11,10 +11,8 @@ class PdoConnection
 	private static $cfg = [
 		'host' => 'localhost',
 		'dbname' => 'loft_mvc',
-		// 'user' => 'loft',
-		// 'password' => 'loft',
-		'user' => 'mysql',
-		'password' => 'mysql',
+		'user' => 'loft',
+		'password' => 'loft',
 	];
 	/** @var PDO */
 	private static $conn;
@@ -37,20 +35,12 @@ class PdoConnection
 					$cfg['user'],
 					$cfg['password']
 				);
-
-				// var_dump($conn);die;
-				$query = self::$conn->prepare('SELECT * FROM users;');
-				// $query = self::$conn->prepare('adsdadsd;');
-				$query->execute();
-				var_dump(27, $query->fetchAll());die;
-
 			} catch (PDOException $e) {
 				echo $e->getMessage();
 				die;
 			}
 		}
 
-		die;
 		return self::$conn;
 	}
 }

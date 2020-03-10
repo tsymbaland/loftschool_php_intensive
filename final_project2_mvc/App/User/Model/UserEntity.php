@@ -2,6 +2,8 @@
 
 namespace App\User\Model;
 
+use Base\Exception\AbsentClassFieldException;
+
 class UserEntity
 {
 	/** @var int */
@@ -20,7 +22,7 @@ class UserEntity
 	private $updatedAt;
 
 	protected $fields = [
-		'id' => 'id',
+		'id' => null,
 		'email' => 'email',
 		'name' => 'name',
 		'password' => 'password',
@@ -38,14 +40,31 @@ class UserEntity
 		}
 	}
 
-	public function saveUserToDb()
+	public function __get(string $param)
 	{
-		// соединяемся с БД и сораняем модель в БД
+		$getter = 'get' . ucfirst(strtolower($param));
+		if (!method_exists($this, $getter)) {
+			throw new AbsentClassFieldException(
+				"There's no $param field in " . get_class() . 'class'
+			);
+		}
+
+		return $this->{$getter}();
+	}
+	public function getFields(): array
+	{
+		return $this->fields;
 	}
 
 	public function getId()
 	{
 		return $this->id;
+	}
+
+	public function setId(int $id): self
+	{
+		$this->id = $id;
+		return $this;
 	}
 
 	public function getName()
@@ -77,7 +96,7 @@ class UserEntity
 
 	public function setPassword(string $password): self
 	{
-		$this->password = $password;
+		$this->password = sha1($password);
 		return $this;
 	}
 

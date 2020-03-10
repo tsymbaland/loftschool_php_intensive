@@ -21,7 +21,8 @@ class Context
 	{
 		session_start();
 		$user = null;
-		if (isset($_SESSION['user_id'])) {
+
+		if (isset($_SESSION['userId'])) {
 			// $user = UserDb::getModelById($_SESSION['user_id']);
 		} else {
 			// echo"ЭГЕГЕЙ<br>";
