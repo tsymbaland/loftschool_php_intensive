@@ -2,6 +2,7 @@
 
 namespace App\User\Controller;
 
+use App\File\Model\ImageHandler;
 use App\User\Model\UserDb;
 use App\User\Model\UserEntity;
 use Base\AbstractController;
@@ -29,7 +30,25 @@ class User extends AbstractController
 			);
 		}
 
-		$user = $db->saveUser(new UserEntity($data));
+		if ($avatar = $data['files']['avatar'] ?? false) {
+			$data['avatar'] =
+				ImageHandler::saveImageFromUser($avatar, $data['email']);
+		}
+		$user = $db->create(new UserEntity($data));
+		$_SESSION['userId'] = $user->getId(); //авторизуем
+	}
+
+	/** @throws AuthorizationException */
+	public function loginAction(array $data)
+	{
+		$db = new UserDb();
+		$user = $db->authorize($data['email'], $data['password']);
+		if (!$user) {
+			throw new AuthorizationException(
+				'You have provided wrong email and/or password.'
+			);
+		}
+
 		$_SESSION['userId'] = $user->getId(); //авторизуем
 	}
 

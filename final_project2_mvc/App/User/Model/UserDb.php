@@ -24,7 +24,7 @@ class UserDb
 		return $result ? new UserEntity($result) : null;
 	}
 
-	public function saveUser(UserEntity $user): UserEntity
+	public function create(UserEntity $user): UserEntity
 	{
 		$fieldsCfg = array_filter($user->getFields());
 		$fields = array_keys($fieldsCfg);
@@ -48,9 +48,20 @@ class UserDb
 		return $user;
 	}
 
-	// public static function saveUser(UserEntity $user)
-	// {
-	// 	$data = ['id' => $user->getId(), 'name' => $user->getName()];
-	// 	// соединяемся с БД и сохраняем массив в базу
-	// }
+	// TODO объеденить с findByEmail в findBy
+	public function authorize(string $email, string $password): ?UserEntity
+	{
+		$query = $this->conn->prepare(
+			"SELECT * FROM users
+			WHERE email = :email
+			AND password = :password;"
+		);
+		$query->execute([
+			'email' => $email,
+			'password' => UserEntity::hashPassword($password),
+		]);
+		$result = $query->fetch(PDO::FETCH_ASSOC);
+
+		return $result ? new UserEntity($result) : null;
+	}
 }

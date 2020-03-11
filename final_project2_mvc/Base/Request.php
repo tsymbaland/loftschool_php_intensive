@@ -19,6 +19,8 @@ class Request
 		$isAuth = Context::getInstance()->isAuth();
 
 		$this->userData = $_REQUEST;
+		$this->userData['files'] = $_FILES ?? [];
+
 		$this->requestUri = trim(
 			$this->userData['url'] ?? $_SERVER['REQUEST_URI'],
 			'/'

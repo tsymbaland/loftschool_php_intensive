@@ -21,6 +21,8 @@ class UserEntity
 	private $createdAt;
 	private $updatedAt;
 
+	public const SALT = 'efg23h4WhaHFOWE68';
+
 	protected $fields = [
 		'id' => null,
 		'email' => 'email',
@@ -35,9 +37,18 @@ class UserEntity
 	public function __construct(array $data)
 	{
 		foreach ($this->fields as $entityField => $inputProperty) {
+			// TODO вызывать сеттеры
 			$value = $data[$entityField] ?? ($data[$inputProperty] ?? null);
+			if ('password' === $inputProperty) {
+				$value = $this::hashPassword($value);
+			}
 			$this->$entityField = $value;
 		}
+	}
+
+	public static function hashPassword(string $password): string
+	{
+		return sha1($password . self::SALT);
 	}
 
 	public function __get(string $param)
@@ -96,7 +107,8 @@ class UserEntity
 
 	public function setPassword(string $password): self
 	{
-		$this->password = sha1($password);
+		$this->password = $this::hashPassword($password);
+
 		return $this;
 	}
 

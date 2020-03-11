@@ -8,8 +8,9 @@
     }
   },
   "require": {
+    "guzzlehttp/guzzle": "^6.5",
     "illuminate/database": "^5.8",
-    "twig/twig": "^2.0",
-    "guzzlehttp/guzzle": "^6.5"
+    "intervention/image": "dev-master",
+    "twig/twig": "^2.0"
   }
 }
