@@ -1,5 +1,9 @@
 <?php
-require_once('AdminViewTrait.php');
+
+namespace App;
+
+use App\AdminViewTrait;
+use PDO;
 
 class Order
 {

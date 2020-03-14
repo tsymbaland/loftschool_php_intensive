@@ -1,5 +1,9 @@
 <?php
 
+namespace App;
+
+use PDO;
+
 class PdoConnection
 {
 	private static $cfg = [
@@ -20,6 +24,7 @@ class PdoConnection
                 $cfg['user'],
                 $cfg['password']
             );
+			self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
 			echo $e->getMessage();
 			die;

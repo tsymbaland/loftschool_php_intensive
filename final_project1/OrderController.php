@@ -1,8 +1,11 @@
 <?php
 
-require_once('PdoConnection.php');
-require_once('User.php');
-require_once('Order.php');
+require_once 'vendor/autoload.php';
+
+use App\Mailer;
+use App\Order;
+use App\PdoConnection;
+use App\User;
 
 [
 	'email' => $email,
@@ -31,6 +34,7 @@ $user = new User($conn);
 $userId = $user->authByEmail($email);
 if (!is_numeric($userId)) {
 	$userId = $user->create($email, $name, $phone);
+	(new Mailer())->sendEmail("YOU ARE A BURGER NOW, $name");
 }
 
 $order = new Order($conn);

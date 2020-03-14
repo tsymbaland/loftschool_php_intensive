@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 trait AdminViewTrait
 {
 	public function makeAdminViewHtml(array $meta, array $data): string

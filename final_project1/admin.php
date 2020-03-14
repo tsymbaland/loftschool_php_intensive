@@ -1,8 +1,8 @@
 <?php
 
-require_once('PdoConnection.php');
-require_once('User.php');
-require_once('Order.php');
+use App\Order;
+use App\PdoConnection;
+use App\User;
 
 $conn = PdoConnection::getConnection();
 $user = new User($conn);

@@ -1,5 +1,10 @@
 <?php
-require_once('AdminViewTrait.php');
+
+namespace App;
+
+use App\AdminViewTrait;
+use InvalidArgumentException;
+use PDO;
 
 class User
 {
