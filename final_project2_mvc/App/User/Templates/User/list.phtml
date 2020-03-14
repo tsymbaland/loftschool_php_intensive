@@ -1,0 +1,16 @@
+<?php
+$users = is_array($this->users) ? $this->users : [];
+$table = ['<table border="2">'];
+/** @var \App\User\Model\UserEntity $user */
+foreach ($users as $user) {
+	$name = $user['name'] ?? '-';
+	$age = $user['age'] ?? '-';
+	$status = '-' === $age ? '-' : ($age >= 18 ? 'Adult' : 'Minor');
+	$table[] = "<tr>
+		<td>{$user['email']}</td>
+		<td>$name</td><td>$age</td><td>$status</td>
+		</tr>";
+}
+$table = implode('', array_merge($table, ['</table>']));
+?>
+<?= $table; ?><br>

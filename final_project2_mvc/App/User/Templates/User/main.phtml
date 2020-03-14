@@ -1,0 +1,21 @@
+<hr><form action="/file/file/gallery" method="post" id="user-gallery-form">
+    <button class="btn btn-info" type="submit">Show user's photos!</button>
+</form>
+
+<hr><form action="/user/user/list" method="post" id="user-list-form">
+    <button class="btn btn-info" type="submit">Get user list!</button><br>
+    <label>
+        <input name="sort" type="radio" value="ASC" checked>
+        <div>ASC</div>
+    </label>
+    <label>
+        <input name="sort" type="radio" value="DESC">
+        <div>DESC</div>
+    </label>
+</form>
+
+<hr><form enctype="multipart/form-data" action="/file/file/upload" method="post" id="upload-form">
+    <label for="photo">Upload photo:</label>
+    <input type="file" id="photo" name="photo">
+    <button class="btn btn-info" type="submit">Upload!</button>
+</form>

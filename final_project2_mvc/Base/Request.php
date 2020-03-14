@@ -43,8 +43,9 @@ class Request
 	 */
 	public function handle(bool $isAuth)
 	{
-		if ($isAuth) {
-			$parts = explode('/', $this->requestUri);
+		$uri = $this->requestUri;
+		if ($isAuth && $uri) {
+			$parts = explode('/', $uri);
 			foreach ($parts as $i => $part) {
 				if (!$this->validate($part)) {
 					throw new Exception("Url part #$i is not valid: $part");

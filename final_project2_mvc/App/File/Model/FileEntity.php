@@ -1,54 +1,36 @@
 <?php
 
-namespace App\User\Model;
+namespace App\File\Model;
 
 use Base\Exception\AbsentClassFieldException;
 
-class UserEntity
+class FileEntity
 {
 	/** @var int */
 	private $id;
-	/** @var string */
-	private $email;
+	/** @var int */
+	private $userId;
 	/** @var string */
 	private $name;
-	/** @var string */
-	private $password;
-	/** @var int */
-	private $age;
-	/** @var string */
-	private $avatar;
 	private $createdAt;
 	private $updatedAt;
 
-	public const SALT = 'efg23h4WhaHFOWE68';
-
 	protected $fields = [
 		'id' => null,
-		'email' => 'email',
+		'user_id' => 'userId',
 		'name' => 'name',
-		'password' => 'password',
-		'age' => 'age',
-		'avatar' => 'avatar',
 		'created_at' => null,
 		'updated_at' => null,
 	];
 
+	// TODO сделать AbstractEntity и занаследовать все Entity от нее
 	public function __construct(array $data)
 	{
 		foreach ($this->fields as $entityField => $inputProperty) {
 			// TODO вызывать сеттеры
 			$value = $data[$entityField] ?? ($data[$inputProperty] ?? null);
-			if ('password' === $inputProperty) {
-				$value = $this::hashPassword($value);
-			}
 			$this->$entityField = $value;
 		}
-	}
-
-	public static function hashPassword(string $password): string
-	{
-		return sha1($password . self::SALT);
 	}
 
 	public function __get(string $param)
@@ -62,7 +44,6 @@ class UserEntity
 
 		return $this->{$getter}();
 	}
-
 	public function getFields(): array
 	{
 		return $this->fields;
@@ -79,60 +60,24 @@ class UserEntity
 		return $this;
 	}
 
+	public function getUserId(): int
+	{
+		return $this->userId;
+	}
+
+	public function setUserId(int $userId): void
+	{
+		$this->userId = $userId;
+	}
+
 	public function getName()
 	{
 		return $this->name;
 	}
 
-	public function setName(?string $name = ''): self
+	public function setName(?string $name = ''): FileEntity
 	{
 		$this->name = $name;
-
-		return $this;
-	}
-
-	public function getEmail(): string
-	{
-		return $this->email;
-	}
-
-	public function setEmail(string $email): self
-	{
-		$this->email = $email;
-		return $this;
-	}
-
-	public function getPassword(): string
-	{
-		return $this->password;
-	}
-
-	public function setPassword(string $password): self
-	{
-		$this->password = $this::hashPassword($password);
-
-		return $this;
-	}
-
-	public function getAge(): ?int
-	{
-		return $this->age;
-	}
-
-	public function setAge(?int $age = null): self
-	{
-		$this->age = $age;
-		return $this;
-	}
-
-	public function getAvatar(): ?string
-	{
-		return $this->avatar;
-	}
-
-	public function setAvatar(?string $avatar = null): self
-	{
-		$this->avatar = $avatar;
 		return $this;
 	}
 

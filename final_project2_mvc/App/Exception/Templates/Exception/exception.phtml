@@ -1,0 +1,7 @@
+<?php
+$messages = is_array($this->messages) ? $this->messages : [];
+?>
+
+<?php foreach($messages as $message): ?>
+	<?= $message; ?><br>
+<?php endforeach; ?>

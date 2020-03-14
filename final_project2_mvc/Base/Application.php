@@ -3,6 +3,7 @@
 namespace Base;
 
 use Base\Exception\AuthorizationException;
+use Base\Exception\NotFound404Exception;
 use Base\PdoConnection;
 use Base\View;
 use Exception;
@@ -37,10 +38,7 @@ class Application
 
 			// проверяем существование метода
 			if (!method_exists($controller, $fullActionName)) {
-				throw new Exception(
-					"Action $fullActionName not found in controller " .
-					$dispatcher->getControllerName()
-				);
+				throw new NotFound404Exception();
 			}
 
 			$view = new View($dispatcher->getTemplateDir());
@@ -52,12 +50,37 @@ class Application
 			echo $view->render($controller->tplFileName);
 
 		} catch (AuthorizationException $e) {
-			$view = new View($dispatcher->getTemplateDir(true));
-			$view->messages = [$e->getMessage()];
-			echo $view->render($dispatcher::DEFAULT_ACTION . '.phtml');
+			$this->onException(
+				$e,
+				$e->getMessage(),
+				$dispatcher::DEFAULT_ACTION,
+				$dispatcher
+			);
+		} catch (NotFound404Exception $e) {
+			$this->onException(
+				$e,
+				$e->getMessage(),
+				$dispatcher::EXCEPTION_DEFAULT_ACTION,
+				$dispatcher
+			);
 		} catch (Exception $e) {
-			echo 'Произошло исключение: ' . $e->getMessage();
-			// обработка исключений самого базового уровня - редирект на 404.html
+			$this->onException(
+				$e,
+				'Произошло исключение: ' . $e->getMessage(),
+				$dispatcher::EXCEPTION_DEFAULT_ACTION,
+				$dispatcher
+			);
 		}
+	}
+
+	private function onException(
+		Exception $e,
+		string $message,
+		string $action,
+		Dispatcher $dispatcher
+	) {
+		$view = new View($dispatcher->getTemplateDir($e));
+		$view->messages = [$message];
+		echo $view->render("$action.phtml");
 	}
 }

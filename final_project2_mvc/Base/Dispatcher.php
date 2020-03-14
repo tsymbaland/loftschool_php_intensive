@@ -2,6 +2,8 @@
 
 namespace Base;
 
+use Base\Exception\AuthorizationException;
+use Base\Exception\NotFound404Exception;
 use Exception;
 
 /**
@@ -14,6 +16,10 @@ class Dispatcher
 	const DEFAULT_MODULE = 'User';
 	const DEFAULT_CONTROLLER = 'User';
 	const DEFAULT_ACTION = 'index';
+
+	const EXCEPTION_MODULE = 'Exception';
+	const EXCEPTION_CONTROLLER = 'Exception';
+	const EXCEPTION_DEFAULT_ACTION = 'exception';
 
 	/** @var bool */
 	private $isAuth;
@@ -50,7 +56,7 @@ class Dispatcher
 			'parts' => [
 				self::DEFAULT_MODULE,
 				self::DEFAULT_CONTROLLER,
-				'mainpage'
+				'main'
 			]
 		],
 	];
@@ -66,7 +72,7 @@ class Dispatcher
 
 	public function dispatch(): self
 	{
-		$uri = $this->request->getRequestUri() ?? 'main';
+		$uri = $this->request->getRequestUri() ?: 'main';
 		$predefinedRoute = $this->predefinedRoutes[$uri] ?? [];
 		if (
 			$this->isAuth ||
@@ -112,22 +118,27 @@ class Dispatcher
 			$this->controllerName
 		);
 		if (!class_exists($controllerClassName)) {
-			throw new Exception("Controller {$controllerClassName} not found");
+			throw new NotFound404Exception();
 		}
 
 		$controller = new $controllerClassName($this->actionName);
 		if (!($controller instanceof AbstractController)) {
-			throw new Exception("Controller {$controllerClassName} doesn't implement abstract controller");
+			throw new NotFound404Exception();
 		}
 
 		return $controller;
 	}
 
-	public function getTemplateDir(bool $onAuthError = false)
+	public function getTemplateDir(?Exception $e = null)
 	{
-		if ($onAuthError) {
-			$moduleName = $this::DEFAULT_MODULE;
-			$controllerName = $this::DEFAULT_CONTROLLER;
+		if ($e) {
+			if ($e instanceof AuthorizationException) {
+				$moduleName = $this::DEFAULT_MODULE;
+				$controllerName = $this::DEFAULT_CONTROLLER;
+			} else {
+				$moduleName = $this::EXCEPTION_MODULE;
+				$controllerName = $this::EXCEPTION_CONTROLLER;
+			}
 		} else {
 			$moduleName = $this->moduleName;
 			$controllerName = $this->controllerName;

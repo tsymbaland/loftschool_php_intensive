@@ -1,0 +1,9 @@
+<?php
+$photos = is_array($this->photos) ? $this->photos : [];
+?>
+
+<?php foreach($photos as $photo): ?>
+    <?= "<img src=\"$photo\">"; ?><br>
+<?php endforeach; ?>
+
+

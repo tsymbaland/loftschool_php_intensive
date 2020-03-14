@@ -21,11 +21,8 @@ class Context
 	{
 		session_start();
 		$user = null;
-
 		if (isset($_SESSION['userId'])) {
-			// $user = UserDb::getModelById($_SESSION['user_id']);
-		} else {
-			// echo"ЭГЕГЕЙ<br>";
+			$user = (new UserDb())->getById((int)$_SESSION['userId']);
 		}
 		$this->setUser($user);
 		$this->setIsAuth((bool)$user);
@@ -65,7 +62,7 @@ class Context
 		return $this->user;
 	}
 
-	public function setUser(?UserEntity $user = null)
+	private function setUser(?UserEntity $user = null)
 	{
 		$this->user = $user;
 	}

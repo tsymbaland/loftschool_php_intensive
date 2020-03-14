@@ -17,6 +17,9 @@ class User extends AbstractController
 	function indexAction()
 	{// Во view тут ничего класть не нужно, просто отображаем
 	}
+	function mainAction()
+	{// Во view тут ничего класть не нужно, просто отображаем
+	}
 
 	/** @throws AuthorizationException */
 	public function signupAction(array $data)
@@ -50,6 +53,12 @@ class User extends AbstractController
 		}
 
 		$_SESSION['userId'] = $user->getId(); //авторизуем
+	}
+
+	public function listAction(array $data)
+	{
+		$db = new UserDb();
+		$this->view->users = $db->findAll($data['sort'] ?? '');
 	}
 
 	/** @throws AuthorizationException */
