@@ -8,14 +8,18 @@ class ImageHandler
 {
 	public static function saveImageFromUser($imgFileCfg, $email): string
 	{
+		$ds = DIRECTORY_SEPARATOR;
 		$newFileName = htmlspecialchars($imgFileCfg['name']);
-		$userImgDir = IMAGES_DIR . md5($email);
-		if (!file_exists($userImgDir)) {
-			mkdir($userImgDir, 666, true);
+		$email = md5($email);
+		$userImgSystemDir = IMAGES_SYSTEM_DIR . $email;
+		if (!file_exists($userImgSystemDir)) {
+			mkdir($userImgSystemDir, 666, true);
 		}
-		$newPath = $userImgDir . DIRECTORY_SEPARATOR . $newFileName;
-		StaticImage::make($imgFileCfg['tmp_name'])->save($newPath);
+		$newSystemPath = $userImgSystemDir . $ds . $newFileName;
+		StaticImage::make($imgFileCfg['tmp_name'])
+			->rotate(0) // удаляем зловредный код
+			->save($newSystemPath);
 
-		return $newPath;
+		return IMAGES_SERVER_DIR . $email . $ds . $newFileName;
 	}
 }
