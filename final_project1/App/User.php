@@ -24,6 +24,11 @@ class User
 		$this->conn = $conn;
 	}
 
+	public function getFields(): array
+	{
+		return $this->fields;
+	}
+
 	public function getAdminView(): string
 	{
 		return $this->makeAdminViewHtml(

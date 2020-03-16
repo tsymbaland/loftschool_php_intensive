@@ -37,4 +37,10 @@ class File extends AbstractController
 		}
 		$this->view->photos = $photos;
 	}
+
+	public function modifyAction(array $data)
+	{
+		$serverImgPath = ImageHandler::modifyImage();
+		$this->view->photo = $serverImgPath;
+	}
 }

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% block head %}
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Admin</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<meta name='description' content=''>
+		<meta name='author' content=''>
+		{% endblock %}
+	</head>
+	<body>
+	{% block content %}
+		<hr><h3>Users</h3>
+		<table border="2">
+			<thead>
+			{% for caption in userMeta %}
+				<th>{{ caption }}</th>
+			{% endfor %}
+			</thead>
+			{% for user in users %}
+				<tr>
+					<td>{{ user.id }}</td>
+					<td>{{ user.email }}</td>
+					<td>{{ user.name }}</td>
+					<td>{{ user.phone_number }}</td>
+				</tr>
+			{% else %}
+				<em>no users found</em>
+			{% endfor %}
+		</table>
+		<hr><h3>Orders</h3>
+		<table border="2">
+			<thead>
+				{% for caption in orderMeta %}
+					<th>{{ caption }}</th>
+				{% endfor %}
+			</thead>
+			{% for order in orders %}
+				<tr>
+					<td>{{ order.id }}</td>
+					<td>{{ order.user_id }}</td>
+					<td>{{ order.address }}</td>
+					<td>{{ order.comment }}</td>
+					<td>{{ order.dont_call_back }}</td>
+					<td>{{ order.card_payment }}</td>
+				</tr>
+			{% else %}
+				<em>no users found</em>
+			{% endfor %}
+		</table>
+	{% endblock %}
+	{% block footer %}{% endblock %}
+	</body>
+	{% block javascripts %}
+	{% endblock %}
+</html>
