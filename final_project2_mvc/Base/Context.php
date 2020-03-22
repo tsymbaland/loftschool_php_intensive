@@ -2,15 +2,14 @@
 
 namespace Base;
 
-use App\User\Model\UserDb;
-use App\User\Model\UserEntity;
+use App\User\Model\UserEntityOrm;
 
 class Context
 {
 	// /** @var \PDO */
 	// private $conn;
 	private $request;
-	/** @var UserEntity */
+	/** @var UserEntityOrm */
 	private $user;
 	/** @var bool */
 	private $isAuth;
@@ -22,7 +21,9 @@ class Context
 		session_start();
 		$user = null;
 		if (isset($_SESSION['userId'])) {
-			$user = (new UserDb())->getById((int)$_SESSION['userId']);
+			$user = (UserEntityOrm::query()->find(
+				(int)$_SESSION['userId']
+			));
 		}
 		$this->setUser($user);
 		$this->setIsAuth((bool)$user);
@@ -57,12 +58,12 @@ class Context
 		$this->request = $request;
 	}
 
-	public function getUser(): ?UserEntity
+	public function getUser(): ?UserEntityOrm
 	{
 		return $this->user;
 	}
 
-	private function setUser(?UserEntity $user = null)
+	private function setUser(?UserEntityOrm $user = null)
 	{
 		$this->user = $user;
 	}

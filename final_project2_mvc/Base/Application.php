@@ -4,8 +4,6 @@ namespace Base;
 
 use Base\Exception\AuthorizationException;
 use Base\Exception\NotFound404Exception;
-use Base\PdoConnection;
-use Base\View;
 use Exception;
 
 class Application

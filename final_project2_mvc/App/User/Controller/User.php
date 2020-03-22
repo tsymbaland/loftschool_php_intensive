@@ -3,15 +3,15 @@
 namespace App\User\Controller;
 
 use App\File\Model\ImageHandler;
-use App\User\Model\UserDb;
-use App\User\Model\UserEntity;
+use App\User\Model\UserDbOrm;
+use App\User\Model\UserEntityOrm;
 use Base\AbstractController;
 use Base\Exception\AuthorizationException;
 
 class User extends AbstractController
 {
 	public function preAction()
-	{// if () {}
+	{
 	}
 
 	function indexAction()
@@ -24,67 +24,70 @@ class User extends AbstractController
 	/** @throws AuthorizationException */
 	public function signupAction(array $data)
 	{
-		$this->validateInputOnSignup($data);
-		$db = new UserDb();
-		$user = $db->getByEmail($data['email']);
-		if ($user) {
-			throw new AuthorizationException(
-				'User with specified email already exists'
-			);
-		}
-
-		if ($avatar = $data['files']['avatar'] ?? false) {
-			$data['avatar'] =
-				ImageHandler::saveImageFromUser($avatar, $data['email']);
-		}
-		$user = $db->create(new UserEntity($data));
-		$_SESSION['userId'] = $user->getId(); //авторизуем
+		$this->makeNewUser($data, true);
 	}
 
 	/** @throws AuthorizationException */
 	public function loginAction(array $data)
 	{
-		$db = new UserDb();
-		$user = $db->authorize($data['email'], $data['password']);
-		if (!$user) {
-			throw new AuthorizationException(
-				'You have provided wrong email and/or password.'
-			);
-		}
+		$user = (new UserDbOrm())->findUserByPassword(
+			$data['email'],
+			$data['password']
+		);
+		$_SESSION['userId'] = $user->getAttribute('id'); //авторизуем
+	}
 
-		$_SESSION['userId'] = $user->getId(); //авторизуем
+	public function adminAction(array $data)
+	{
+		if ($data['create'] ?? false) {
+			$this->makeNewUser($data);
+			$this->view->message = '<b>New user has been created!</b>';
+		} elseif ($data['edit'] ?? false) {
+			$db = new UserDbOrm();
+			$user = $db->findUserByPassword(
+				$data['email'],
+				$data['password']
+			);
+			$data = $this->saveImageFromUser($data);
+			$db->edit($user, $data);
+			$this->view->message = '<b>User has been edited successfully!</b>';
+		}
 	}
 
 	public function listAction(array $data)
 	{
-		$db = new UserDb();
-		$this->view->users = $db->findAll($data['sort'] ?? '');
+		$users = (new UserDbOrm())
+			->findBy(
+				[],
+				['id' => $data['sort'] ?? ''],
+			);
+		$this->view->users = $users->toArray();
 	}
 
 	/** @throws AuthorizationException */
-	private function validateInputOnSignup(array $data)
+	public function makeNewUser(array $data, bool $rememberInSession = false)
 	{
-		$p1 = $data['password'] ?? false;
-		$p2 = $data['password2'] ?? false;
-		if (!$p1 || !$p2 || $p1 !== $p2) {
-			throw new AuthorizationException(
-				'Both password fields must be filled with same values'
-			);
-		}
-		if (!filter_var($data['email'] ?? false, FILTER_VALIDATE_EMAIL)) {
-			throw new AuthorizationException('You should provide valid email');
+		$db = new UserDbOrm();
+		UserEntityOrm::validateInputOnSignup($data);
+		$db->checkIfEmailIsPresent($data['email']);
+
+		$data = $this->saveImageFromUser($data);
+		$user = $db->create($data);
+		if ($rememberInSession) {
+			$_SESSION['userId'] = $user->id; //авторизуем
 		}
 	}
 
-	// function testAction()
-	// {
-	// 	$userModel = UserDb::getModelById(1);
-	// 	UserDb::saveUser($userModel);
-	// 	$this->view->user = $userModel;
-	//
-	// 	$footerView = clone $this->view;
-	// 	$footerView->conters = [1, 2, 3];
-	// 	$footerView->setTemplatePath('');
-	// 	$this->view->footerTpl = $footerView->render('footer.phtml');
-	// }
+	/** @throws AuthorizationException */
+	public function saveImageFromUser(array $data, bool $rememberInSession = false)
+	{
+		$avatar = $data['files']['avatar'];
+		if ($avatar['tmp_name']) {
+			$data['avatar'] =
+				ImageHandler::saveImageFromUser($avatar, $data['email']);
+			unset($data['files']);
+		}
+
+		return $data;
+	}
 }

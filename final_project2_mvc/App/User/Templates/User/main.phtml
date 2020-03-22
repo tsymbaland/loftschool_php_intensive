@@ -23,3 +23,22 @@
 <hr><form action="/file/file/modify" method="post" id="modify-form">
     <button class="btn btn-info" type="submit">Modify photo on server!</button>
 </form>
+
+<hr>ADMIN CONTROLS - edit or create user<hr>
+<form enctype="multipart/form-data" action="/user/user/admin" method="post" id="admin-form">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+    <label for="password2">Password (retype):</label>
+    <input type="password" id="password2" name="password2">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age">
+    <label for="avatar">Avatar:</label>
+    <input type="file" id="avatar" name="avatar">
+
+    <input type="submit" value="Create user" name="create" />
+    <input type="submit" value="Edit user" name="edit" />
+</form>

@@ -2,7 +2,7 @@
 
 namespace App\File\Controller;
 
-use App\File\Model\FileDb;
+use App\File\Model\FileDbOrm;
 use App\File\Model\FileEntity;
 use App\File\Model\ImageHandler;
 use Base\AbstractController;
@@ -13,22 +13,22 @@ class File extends AbstractController
 	public function uploadAction(array $data)
 	{
 		$user = Context::getInstance()->getUser();
-		$data['userId'] = $user->getId();
+		$data['userId'] = $user->id;
 		$photo = $data['files']['photo'];
+		if (!$photo['tmp_name']) die;
+
 		$data['name'] = ImageHandler::saveImageFromUser(
 			$photo,
 			$user->getEmail()
 		);
-
-		$db = new FileDb();
-		$db->create(new FileEntity($data));
+		(new FileDbOrm())->create(new FileEntity($data));
 	}
 
 	public function galleryAction()
 	{
-		$db = new FileDb();
+		$db = new FileDbOrm();
 		$user = Context::getInstance()->getUser();
-		$photos = $db->getByUser($user->getId());
+		$photos = $db->findBy(['userId' => $user->id])->toArray();
 		$photos = array_map(function ($photo) {
 			return $photo['name'];
 		}, $photos);
